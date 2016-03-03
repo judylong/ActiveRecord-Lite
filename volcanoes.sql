@@ -38,7 +38,7 @@ VALUES
   (2, "Japan", 2),
   (3, "Chile", 3),
   (4, "Mexico", 3),
-  (5, "Iceland", 2);
+  (5, "Iceland", 1);
 
 INSERT INTO
   volcanoes (id, name, country_id, last_eruption)
@@ -48,4 +48,5 @@ VALUES
   (3, "Vesuvius", 1, "1944"),
   (4, "Fuji", 2, "December 16, 1707"),
   (5, "Cerro Azul", 3, "1967"),
-  (6, "Colima", 4, "2015");
+  (6, "Colima", 4, "2015"),
+  (7, "Mount Doom", NULL, "Unknown");
