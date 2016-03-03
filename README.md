@@ -44,7 +44,7 @@ An Object Relational Mapping (ORM) inspired by ActiveRecord.
     end
     ```
 
-    #### Uses:
+    #### Method Usage:
     ##### **Searchable:**
     ```ruby
     etna = Volcano.find(1) #=> returns an object representing "Mount Etna"
