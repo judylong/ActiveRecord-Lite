@@ -23,14 +23,13 @@ An Object Relational Mapping (ORM) inspired by ActiveRecord.
 + declare classes:
     ```ruby
     class Volcano < SQLObject
-      self.table_name = "volcano"
+      self.table_name = "volcanoes"
       belongs_to :country, foreign_key: :country_id
       has_one_through :continent, :country, :continent
       self.finalize!
     end
 
     class Country < SQLObject
-      self.table_name = "country"
       has_many :volcanoes, foreign_key: :country_id
       belongs_to :continent
 
@@ -38,7 +37,6 @@ An Object Relational Mapping (ORM) inspired by ActiveRecord.
     end
 
     class Continent < SQLObject
-      self.table_name = "continent"
       has_many :countries, foreign_key: :continent_id
       self.finalize!
     end

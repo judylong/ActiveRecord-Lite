@@ -3,14 +3,13 @@ require_relative './lib/associatable.rb'
 DBConnection.open("./volcanoes.db")
 
 class Volcano < SQLObject
-  self.table_name = "volcano"
+  self.table_name = "volcanoes"
   belongs_to :country, foreign_key: :country_id
   has_one_through :continent, :country, :continent
   self.finalize!
 end
 
 class Country < SQLObject
-  self.table_name = "country"
   has_many :volcanoes, foreign_key: :country_id
   belongs_to :continent
 
@@ -18,7 +17,6 @@ class Country < SQLObject
 end
 
 class Continent < SQLObject
-  self.table_name = "continent"
   has_many :countries, foreign_key: :continent_id
   self.finalize!
 end

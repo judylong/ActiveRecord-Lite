@@ -1,4 +1,4 @@
-CREATE TABLE volcano (
+CREATE TABLE volcanoes (
   id INTEGER PRIMARY KEY,
   name VARCHAR(255) NOT NULL,
   last_eruption VARCHAR(255) NOT NULL,
@@ -7,7 +7,7 @@ CREATE TABLE volcano (
   FOREIGN KEY(country_id) REFERENCES country(id)
 );
 
-CREATE TABLE country (
+CREATE TABLE countries (
   id INTEGER PRIMARY KEY,
   name VARCHAR(255) NOT NULL,
   continent_id INTEGER,
@@ -15,13 +15,13 @@ CREATE TABLE country (
   FOREIGN KEY(continent_id) REFERENCES continent(id)
 );
 
-CREATE TABLE continent (
+CREATE TABLE continents (
   id INTEGER PRIMARY KEY,
   name VARCHAR(255) NOT NULL
 );
 
 INSERT INTO
-  continent (id, name)
+  continents (id, name)
 VALUES
   (1, "Europe"),
   (2, "Asia"),
@@ -32,7 +32,7 @@ VALUES
   (7, "Africa");
 
 INSERT INTO
-  country (id, name, continent_id)
+  countries (id, name, continent_id)
 VALUES
   (1, "Italy", 1),
   (2, "Japan", 2),
@@ -41,7 +41,7 @@ VALUES
   (5, "Iceland", 2);
 
 INSERT INTO
-  volcano (id, name, country_id, last_eruption)
+  volcanoes (id, name, country_id, last_eruption)
 VALUES
   (1, "Mount Etna", 1, "December 3, 2015"),
   (2, "Stromboli", 1, "Ongoing"),
