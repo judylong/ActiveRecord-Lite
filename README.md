@@ -64,3 +64,6 @@ italy.volcanoes #=> returns array for objects representing "Mount Etna", "Vesuvi
 
 europe.countries #=> returns an array with objects representing "Italy" and "Iceland"
 ```
+#### Example (using file):
++ Setup database: `cat 'volcanoes.sql' | sqlite3 'volcanoes.db'`
++ From terminal, call `ruby volcano_example.rb`
