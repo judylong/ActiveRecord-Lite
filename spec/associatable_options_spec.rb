@@ -3,75 +3,74 @@ require 'associatable_options'
 describe 'AssocOptions' do
   describe 'BelongsToOptions' do
     it 'provides defaults' do
-      options = BelongsToOptions.new('house')
+      options = BelongsToOptions.new('continent')
 
-      expect(options.foreign_key).to eq(:house_id)
-      expect(options.class_name).to eq('House')
+      expect(options.foreign_key).to eq(:continent_id)
+      expect(options.class_name).to eq('Continent')
       expect(options.primary_key).to eq(:id)
     end
 
     it 'allows overrides' do
-      options = BelongsToOptions.new('owner',
-                                     foreign_key: :human_id,
-                                     class_name: 'Human',
-                                     primary_key: :human_id
+      options = BelongsToOptions.new('country',
+                                     foreign_key: :country_id,
+                                     class_name: 'Country',
+                                     primary_key: :country_id
       )
 
-      expect(options.foreign_key).to eq(:human_id)
-      expect(options.class_name).to eq('Human')
-      expect(options.primary_key).to eq(:human_id)
+      expect(options.foreign_key).to eq(:country_id)
+      expect(options.class_name).to eq('Country')
+      expect(options.primary_key).to eq(:country_id)
     end
   end
 
   describe 'HasManyOptions' do
     it 'provides defaults' do
-      options = HasManyOptions.new('cats', 'Human')
+      options = HasManyOptions.new('volcanoes', 'Country')
 
-      expect(options.foreign_key).to eq(:human_id)
-      expect(options.class_name).to eq('Cat')
+      expect(options.foreign_key).to eq(:country_id)
+      expect(options.class_name).to eq('Volcano')
       expect(options.primary_key).to eq(:id)
     end
 
     it 'allows overrides' do
-      options = HasManyOptions.new('cats', 'Human',
-                                   foreign_key: :owner_id,
-                                   class_name: 'Kitten',
-                                   primary_key: :human_id
+      options = HasManyOptions.new('volcanoes', 'Country',
+                                   foreign_key: :country_id,
+                                   class_name: 'Vulcan',
+                                   primary_key: :country_id
       )
 
-      expect(options.foreign_key).to eq(:owner_id)
-      expect(options.class_name).to eq('Kitten')
-      expect(options.primary_key).to eq(:human_id)
+      expect(options.foreign_key).to eq(:country_id)
+      expect(options.class_name).to eq('Vulcan')
+      expect(options.primary_key).to eq(:country_id)
     end
   end
 
   describe 'AssocOptions' do
     before(:all) do
-      class Cat < SQLObject
+      class Volcano < SQLObject
+        self.table_name = "volcanoes"
         self.finalize!
       end
 
-      class Human < SQLObject
-        self.table_name = 'humans'
-
+      class Country < SQLObject
         self.finalize!
       end
     end
 
     it '#model_class returns class of associated object' do
-      options = BelongsToOptions.new('human')
-      expect(options.model_class).to eq(Human)
+      options = BelongsToOptions.new('country')
+      expect(options.model_class).to eq(Country)
 
-      options = HasManyOptions.new('cats', 'Human')
-      expect(options.model_class).to eq(Cat)
+      options = HasManyOptions.new('volcanoes', 'Country')
+      expect(options.model_class).to eq(Volcano)
     end
 
     it '#table_name returns table name of associated object' do
-      options = BelongsToOptions.new('human')
-      expect(options.table_name).to eq('humans')
+      options = BelongsToOptions.new('country')
+      expect(options.table_name).to eq('countries')
 
-      options = HasManyOptions.new('cats', 'Human')
-      expect(options.table_name).to eq('cats')
+      options = HasManyOptions.new('volcanoes', 'Country')
+      expect(options.table_name).to eq('volcanoes')
     end
   end
 end
@@ -81,85 +80,85 @@ describe 'Associatable' do
   after(:each) { DBConnection.reset }
 
   before(:all) do
-    class Cat < SQLObject
-      belongs_to :human, foreign_key: :owner_id
+    class Volcano < SQLObject
+      belongs_to :country, foreign_key: :country_id
 
       finalize!
     end
 
-    class Human < SQLObject
-      self.table_name = 'humans'
+    class Country < SQLObject
+      self.table_name = 'countries'
 
-      has_many :cats, foreign_key: :owner_id
-      belongs_to :house
+      has_many :volcanoes, foreign_key: :country_id
+      belongs_to :continent
 
       finalize!
     end
 
-    class House < SQLObject
-      has_many :humans
+    class Continent < SQLObject
+      has_many :countries
 
       finalize!
     end
   end
 
   describe '#belongs_to' do
-    let(:breakfast) { Cat.find(1) }
-    let(:devon) { Human.find(1) }
+    let(:etna) { Volcano.find(1) }
+    let(:italy) { Country.find(1) }
 
-    it 'fetches `human` from `Cat` correctly' do
-      expect(breakfast).to respond_to(:human)
-      human = breakfast.human
+    it 'fetches `country` from `Volcano` correctly' do
+      expect(etna).to respond_to(:country)
+      country = etna.country
 
-      expect(human).to be_instance_of(Human)
-      expect(human.fname).to eq('Devon')
+      expect(country).to be_instance_of(Country)
+      expect(country.name).to eq('Italy')
     end
 
-    it 'fetches `house` from `Human` correctly' do
-      expect(devon).to respond_to(:house)
-      house = devon.house
+    it 'fetches `continent` from `Country` correctly' do
+      expect(italy).to respond_to(:continent)
+      continent = italy.continent
 
-      expect(house).to be_instance_of(House)
-      expect(house.address).to eq('26th and Guerrero')
+      expect(continent).to be_instance_of(Continent)
+      expect(continent.name).to eq('Europe')
     end
 
     it 'returns nil if no associated object' do
-      stray_cat = Cat.find(5)
-      expect(stray_cat.human).to eq(nil)
+      unidentified_volcano = Volcano.find(7)
+      expect(unidentified_volcano.country).to eq(nil)
     end
   end
 
   describe '#has_many' do
-    let(:ned) { Human.find(3) }
-    let(:ned_house) { House.find(2) }
+    let(:italy) { Country.find(1) }
+    let(:italy_continent) { Continent.find(1) }
 
-    it 'fetches `cats` from `Human`' do
-      expect(ned).to respond_to(:cats)
-      cats = ned.cats
+    it 'fetches `volcanoes` from `Country`' do
+      expect(italy).to respond_to(:volcanoes)
+      volcanoes = italy.volcanoes
 
-      expect(cats.length).to eq(2)
+      expect(volcanoes.length).to eq(3)
 
-      expected_cat_names = %w(Haskell Markov)
-      2.times do |i|
-        cat = cats[i]
+      expected_volcano_names = ["Mount Etna", "Stromboli", "Vesuvius"]
+      3.times do |i|
+        volcano = volcanoes[i]
 
-        expect(cat).to be_instance_of(Cat)
-        expect(cat.name).to eq(expected_cat_names[i])
+        expect(volcano).to be_instance_of(Volcano)
+        expect(volcano.name).to eq(expected_volcano_names[i])
       end
     end
 
-    it 'fetches `humans` from `House`' do
-      expect(ned_house).to respond_to(:humans)
-      humans = ned_house.humans
+    it 'fetches `countries` from `Continent`' do
+      expect(italy_continent).to respond_to(:countries)
+      countries = italy_continent.countries
 
-      expect(humans.length).to eq(1)
-      expect(humans[0]).to be_instance_of(Human)
-      expect(humans[0].fname).to eq('Ned')
+      expect(countries.length).to eq(2)
+      expect(countries[0]).to be_instance_of(Country)
+      expect(countries[0].name).to eq('Italy')
     end
 
     it 'returns an empty array if no associated items' do
-      catless_human = Human.find(4)
-      expect(catless_human.cats).to eq([])
+      volcanoless_country = Country.find(5)
+      expect(volcanoless_country.volcanoes).to eq([])
     end
   end
 end

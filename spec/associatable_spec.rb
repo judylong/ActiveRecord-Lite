@@ -5,23 +5,22 @@ describe 'Associatable' do
   after(:each) { DBConnection.reset }
 
   before(:all) do
-    class Cat < SQLObject
-      belongs_to :human, foreign_key: :owner_id
+    class Volcano < SQLObject
+      self.table_name = 'volcanoes'
+      belongs_to :country, foreign_key: :country_id
 
       finalize!
     end
 
-    class Human < SQLObject
-      self.table_name = 'humans'
-
-      has_many :cats, foreign_key: :owner_id
-      belongs_to :house
+    class Country < SQLObject
+      has_many :volcanoes, foreign_key: :country_id
+      belongs_to :continent
 
       finalize!
     end
 
-    class House < SQLObject
-      has_many :humans
+    class Continent < SQLObject
+      has_many :countries
 
       finalize!
     end
@@ -36,44 +35,44 @@ describe 'Associatable' do
     end
 
     it 'stores `belongs_to` options' do
-      cat_assoc_options = Cat.assoc_options
-      human_options = cat_assoc_options[:human]
+      volcano_assoc_options = Volcano.assoc_options
+      country_options = volcano_assoc_options[:country]
 
-      expect(human_options).to be_instance_of(BelongsToOptions)
-      expect(human_options.foreign_key).to eq(:owner_id)
-      expect(human_options.class_name).to eq('Human')
-      expect(human_options.primary_key).to eq(:id)
+      expect(country_options).to be_instance_of(BelongsToOptions)
+      expect(country_options.foreign_key).to eq(:country_id)
+      expect(country_options.class_name).to eq('Country')
+      expect(country_options.primary_key).to eq(:id)
     end
 
     it 'stores options separately for each class' do
-      expect(Cat.assoc_options).to have_key(:human)
-      expect(Human.assoc_options).to_not have_key(:human)
+      expect(Volcano.assoc_options).to have_key(:country)
+      expect(Country.assoc_options).to_not have_key(:country)
 
-      expect(Human.assoc_options).to have_key(:house)
-      expect(Cat.assoc_options).to_not have_key(:house)
+      expect(Country.assoc_options).to have_key(:continent)
+      expect(Volcano.assoc_options).to_not have_key(:continent)
     end
   end
 
   describe '#has_one_through' do
     before(:all) do
-      class Cat
-        has_one_through :home, :human, :house
+      class Volcano
+        has_one_through :continent, :country, :continent
 
         self.finalize!
       end
     end
 
-    let(:cat) { Cat.find(1) }
+    let(:volcano) { Volcano.find(1) }
 
     it 'adds getter method' do
-      expect(cat).to respond_to(:home)
+      expect(volcano).to respond_to(:continent)
     end
 
-    it 'fetches associated `home` for a `Cat`' do
-      house = cat.home
+    it 'fetches associated `continent` for a `Volcano`' do
+      continent = volcano.continent
 
-      expect(house).to be_instance_of(House)
-      expect(house.address).to eq('26th and Guerrero')
+      expect(continent).to be_instance_of(Continent)
+      expect(continent.name).to eq('Europe')
     end
   end
 end
